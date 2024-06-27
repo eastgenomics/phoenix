@@ -8,6 +8,11 @@ from clinvar_file_fetcher import connect_to_website
 
 
 def run_annotation_update(config_path) -> None:
+    """run annotation update for b38 clinvar annotation resource file
+
+    Args:
+        config_path (str): path to config file
+    """
     # load config file
     clinvar_base_link, clinvar_link_path = load_config(config_path)
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
@@ -40,7 +45,7 @@ if __name__ == "__main__":
     # validate arguments
     num_args = len(sys.argv)
     if num_args < 2:
-        print(
+        raise RuntimeError(
             "Error: path to config file must be specified when running"
             + "clinvar_annotation_update.py"
         )
