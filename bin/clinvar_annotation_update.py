@@ -19,7 +19,7 @@ def run_annotation_update(config_path) -> None:
     print("Exiting Phoenix")
 
 
-def load_config(config_path) -> tuple[str, str]:
+def load_config(config_path):
     """opens config file in json format and reads contents
 
     Args:
@@ -31,7 +31,7 @@ def load_config(config_path) -> tuple[str, str]:
     """
     with open(config_path, "r", encoding="utf8") as json_file:
         config = json.load(json_file)
-    clinvar_base_link = config.get("CLINVAR_BASE_LINK_B38")
+    clinvar_base_link = config.get("CLINVAR_BASE_LINK")
     clinvar_link_path = config.get("CLINVAR_LINK_PATH_B38")
     return clinvar_base_link, clinvar_link_path
 

@@ -6,15 +6,18 @@ pathToProjectDir = ""
 
 process clinvarAnnotationUpdate
 {
+    input:
+        path config_path
+
     script:
         
         """
-        python3 ${pathToBin}/clinvar_annotation_update.py ${params.config_path}
+        python3 ${pathToBin}/clinvar_annotation_update.py ${config_path}
         """
 }
 
 workflow 
 {
     // run phoenix clinvar annotation update
-    clinvarAnnotationUpdate()
+    clinvarAnnotationUpdate(params.config_path)
 }
