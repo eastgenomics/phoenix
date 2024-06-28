@@ -35,7 +35,7 @@ def connect_to_website(base_link, path) -> FTP:
         trimmed_link = result.group(2)
 
     # safety feature to prevent too many requests to server
-    time.sleep(0.1)
+    time.sleep(0.5)
     try:
         ftp = FTP(trimmed_link)
         ftp.login()
