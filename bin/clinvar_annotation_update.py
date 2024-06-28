@@ -42,12 +42,8 @@ def load_config(config_path):
         "CLINVAR_BASE_LINK",
         "CLINVAR_LINK_PATH_B38"
     ]
-    try:
-        assert keys in config
-    except AssertionError:
-        raise RuntimeError(
-            "Config file does not contain expected keys"
-        )
+    if keys not in config:
+        raise RuntimeError("Config file does not contain expected keys")
     clinvar_base_link = config.get("CLINVAR_BASE_LINK")
     clinvar_link_path = config.get("CLINVAR_LINK_PATH_B38")
     return clinvar_base_link, clinvar_link_path
