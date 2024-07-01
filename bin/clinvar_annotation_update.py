@@ -4,7 +4,9 @@ Runs Phoenix ClinVar annotation resource update
 
 import argparse
 import json
-from clinvar_file_fetcher import connect_to_website
+from clinvar_file_fetcher import (
+    connect_to_website, get_most_recent_clivar_file_info
+)
 
 
 def run_annotation_update(config_path) -> None:
@@ -16,14 +18,14 @@ def run_annotation_update(config_path) -> None:
     # load config file
     clinvar_base_link, clinvar_link_path = load_config(config_path)
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
+    (
+        recent_vcf_file, recent_tbi_file, most_recent_date, recent_vcf_version
+    ) = get_most_recent_clivar_file_info(ftp)
 
-    # for all files returned by ftp, add names to file_list
-    file_list = []
-    ftp.retrlines('LIST', file_list.append)
-
-    for file in file_list:
-        print(file)
-    print("Exiting Phoenix")
+    print(f"Most recent clinvar annotation resource file: {recent_vcf_file}")
+    print(f"Most recent clinvar file index: {recent_tbi_file}")
+    print(f"Date of most recent clinvar file version: {most_recent_date}")
+    print(f"Most recent clinvar file version: {recent_vcf_version}")
 
 
 def load_config(config_path):
