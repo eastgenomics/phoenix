@@ -7,6 +7,7 @@ import json
 from clinvar_file_fetcher import (
     connect_to_website, get_most_recent_clivar_file_info
 )
+import datetime
 
 
 def run_annotation_update(config_path) -> None:
@@ -14,17 +15,28 @@ def run_annotation_update(config_path) -> None:
 
     Args:
         config_path (str): path to config file
+
+    Raises:
+        RuntimeError: Most recent clinvar file is over 8 weeks old
     """
     # load config file
     clinvar_base_link, clinvar_link_path = load_config(config_path)
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
     (
-        recent_vcf_file, recent_tbi_file, most_recent_date, recent_vcf_version
+        recent_vcf_file, recent_tbi_file, clinvar_version_date,
+        recent_vcf_version
     ) = get_most_recent_clivar_file_info(ftp)
+
+    two_months_prior = datetime.datetime.now() - datetime.timedelta(weeks=8)
+    if clinvar_version_date < two_months_prior:
+        raise RuntimeError(
+            "Most recent clinvar file availble for download is from over"
+            + " 8 weeks ago"
+        )
 
     print(f"Most recent clinvar annotation resource file: {recent_vcf_file}")
     print(f"Most recent clinvar file index: {recent_tbi_file}")
-    print(f"Date of most recent clinvar file version: {most_recent_date}")
+    print(f"Date of most recent clinvar file version: {clinvar_version_date}")
     print(f"Most recent clinvar file version: {recent_vcf_version}")
 
 
