@@ -1,3 +1,9 @@
+<!-- dx-header -->
+
+# phoenix (DNAnexus Platform App)
+
+## What does this app do?
+
 Phoenix is a program designed for the automation of ClinVar annotation resource updates.
 
 It consists of the two main python modules annotation_update.py and vep_config_update.py, used to set off the ClinVar annotation resource update and VEP config file updates respectively.
@@ -20,3 +26,22 @@ dx run applet-GkyY1Vj43Zq9Y5B6v1Q89XFg -i nextflow_pipeline_params="--config_pat
 
 During early development, Phoenix can be run as an applet. However, it an easily be converted to a DNANexus app from an applet with the following command:
 dx build --app --from applet-xxxx
+
+
+## What data are required for this app to run?
+
+**Packages**
+* Python packages (specified in requirements.txt)
+
+**Inputs**
+Required
+* `nextflow_pipeline_params`: --config_path="dx://project-xxxx:/path_to_config/phoenix_config.json"
+
+Optional
+* None
+
+## What does this app output?
+
+This app does not have an output
+
+
