@@ -12,7 +12,7 @@ process clinvarAnnotationUpdate
     script:
         
         """
-        python3 ${pathToBin}/clinvar_annotation_update.py ${config_path}
+        python3 ${pathToBin}/clinvar_annotation_update.py --config_file ${config_path}
         """
 }
 

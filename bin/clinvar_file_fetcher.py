@@ -6,7 +6,7 @@ import time
 from ftplib import FTP
 import re
 from ftplib import error_perm
-import datetime
+from datetime import datetime
 
 
 def connect_to_website(base_link, path) -> FTP:
@@ -62,7 +62,7 @@ def get_most_recent_clivar_file_info(ftp):
     Returns:
         recent_vcf_file (str): most recent clinvar vcf filename found
         recent_tbi_file (str): index file name for most recent vcf found
-        most_recent_date (datetime.datetime): most recent clinvar file date
+        most_recent_date (datetime.date): most recent clinvar file date
         recent_vcf_version (Str): most recent clinvar version format YYYYMMDD
     """
     # for all file info strings returned by ftp, add names to file_info_list

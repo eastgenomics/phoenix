@@ -27,11 +27,14 @@ def run_annotation_update(config_path) -> None:
         recent_vcf_version
     ) = get_most_recent_clivar_file_info(ftp)
 
-    two_months_prior = datetime.datetime.now() - datetime.timedelta(weeks=8)
-    if clinvar_version_date < two_months_prior:
+    num_weeks_ago = 8
+    earlier_date = (
+        datetime.date.today() - datetime.timedelta(weeks=num_weeks_ago)
+    )
+    if clinvar_version_date < earlier_date:
         raise RuntimeError(
             "Most recent clinvar file availble for download is from over"
-            + " 8 weeks ago"
+            + f" {num_weeks_ago} weeks ago"
         )
 
     print(f"Most recent clinvar annotation resource file: {recent_vcf_file}")
@@ -56,7 +59,7 @@ def load_config(config_path):
         "CLINVAR_BASE_LINK",
         "CLINVAR_LINK_PATH_B38"
     ]
-    if keys not in config:
+    if not all(e in config for e in keys):
         raise RuntimeError("Config file does not contain expected keys")
     clinvar_base_link = config.get("CLINVAR_BASE_LINK")
     clinvar_link_path = config.get("CLINVAR_LINK_PATH_B38")
