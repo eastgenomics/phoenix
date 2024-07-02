@@ -49,9 +49,7 @@ def connect_to_website(base_link, path) -> FTP:
     return ftp
 
 
-def get_most_recent_clivar_file_info(
-    ftp
-) -> tuple[str, str, datetime.datetime, str]:
+def get_most_recent_clivar_file_info(ftp):
     """gets information on most recent clinvar files
 
     Args:
