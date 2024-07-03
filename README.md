@@ -21,10 +21,11 @@ Config file structure:
 To build Phoenix as a nextflow applet run the following from the phoenix repo directory:
 dx build --nextflow .
 
-To set off the nextflow DNAnexus applet, run the following command, replacing the applet ID you have generated and the DNAnexus file path with the location of the config file you wish to use on DNAnexus.
-dx run applet-GkyY1Vj43Zq9Y5B6v1Q89XFg -i nextflow_pipeline_params="--config_path="dx://project-GkxxZq843Zq2f0Gk3Z40p7BJ:/Config/phoenix_config.json""
+To set off the nextflow DNAnexus applet, run the following command, replacing the project ID you are using to run Phoenix in and the DNAnexus file path with the location of the config file you wish to use on DNAnexus.
+dx run phoenix -i nextflow_pipeline_params="--config_path="dx://project-xxxx:/path/to/phoenix_config.json"" \
+--destination="path/to/destination"
 
-During early development, Phoenix can be run as an applet. However, it an easily be converted to a DNANexus app from an applet with the following command:
+During early development, Phoenix can be run as an applet. However, it can easily be converted to a DNANexus app from an applet with the following command:
 dx build --app --from applet-xxxx
 
 
