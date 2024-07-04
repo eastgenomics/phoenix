@@ -62,7 +62,8 @@ def load_config(config_path):
         config = json.load(json_file)
     keys = [
         "CLINVAR_BASE_LINK",
-        "CLINVAR_LINK_PATH_B38"
+        "CLINVAR_LINK_PATH_B38",
+        "CLINVAR_CHECK_NUM_WEEKS_AGO"
     ]
     if not all(e in config for e in keys):
         raise RuntimeError("Config file does not contain expected keys")
