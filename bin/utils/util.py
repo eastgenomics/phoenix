@@ -6,7 +6,7 @@ import datetime
 
 
 def is_date_within_n_weeks(comparison_date, num_weeks_ago=8) -> bool:
-    """_summary_
+    """Checks if a given date occurs within past n weeks
 
     Args:
         comparison_date (datetime.date): Date to compare
