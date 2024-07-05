@@ -8,18 +8,20 @@ import re
 from ftplib import error_perm
 from datetime import datetime
 
+from utils.util import download_file_upload_DNAnexus
+
 
 def connect_to_website(base_link, path) -> FTP:
-    """generates a FTP object to enable file download from website
+    """Generates a FTP object to enable file download from website
 
     Args:
-        base_link (str): link used to download clivar files
-        path (str): path appended to link in format path/to/dir
+        base_link (str): Link used to download clivar files
+        path (str): Path appended to link in format path/to/dir
 
     Raises:
-        RuntimeError: invalid link provided to connect_to_website
-        RuntimeError: cannot connect to website
-        RuntimeError: cannot find directory provided as path
+        RuntimeError: Invalid link provided to connect_to_website
+        RuntimeError: Cannot connect to website
+        RuntimeError: Cannot find directory provided as path
 
     Returns:
         ftplib.FTP: FTP object to enable file download from website
@@ -50,20 +52,20 @@ def connect_to_website(base_link, path) -> FTP:
 
 
 def get_most_recent_clivar_file_info(ftp):
-    """gets information on most recent clinvar files
+    """Gets information on most recent clinvar files
 
     Args:
         ftp (FTP): FTP object to get clinvar files
 
     Raises:
-        RuntimeError: no clinvar vcf files found on ncbi website
-        RuntimeError: no clinvar vcf index found on ncbi website
+        RuntimeError: No clinvar vcf files found on ncbi website
+        RuntimeError: No clinvar vcf index found on ncbi website
 
     Returns:
-        recent_vcf_file (str): most recent clinvar vcf filename found
-        recent_tbi_file (str): index file name for most recent vcf found
-        most_recent_date (datetime.date): most recent clinvar file date
-        recent_vcf_version (Str): most recent clinvar version format YYYYMMDD
+        recent_vcf_file (str): Most recent clinvar vcf filename found
+        recent_tbi_file (str): Index file name for most recent vcf found
+        most_recent_date (datetime.date): Most recent clinvar file date
+        recent_vcf_version (Str): Most recent clinvar version format YYYYMMDD
     """
     # for all file info strings returned by ftp, add names to file_info_list
     file_info_list = []
@@ -72,8 +74,7 @@ def get_most_recent_clivar_file_info(ftp):
     clinvar_gz_regex = re.compile(r"^clinvar_[0-9]+\.vcf\.gz$")
 
     most_recent_date = datetime.strptime("20100101", '%Y%m%d').date()
-    recent_vcf_version = ""
-    recent_vcf_file = None
+    clinvar_version = recent_vcf_file = None
 
     for file_info in file_info_list:
         # if file info is empty, ignore
@@ -96,7 +97,7 @@ def get_most_recent_clivar_file_info(ftp):
             # date, set most recent date to current file date
             if most_recent_date < vcf_file_date:
                 most_recent_date = vcf_file_date
-                recent_vcf_version = ftp_vcf_ver
+                clinvar_version = ftp_vcf_ver
                 recent_vcf_file = file_name
 
     if recent_vcf_file is None:
@@ -113,5 +114,41 @@ def get_most_recent_clivar_file_info(ftp):
         )
 
     return (
-        recent_vcf_file, recent_tbi_file, most_recent_date, recent_vcf_version
+        recent_vcf_file, recent_tbi_file, most_recent_date, clinvar_version
     )
+
+
+def download_clinvar_dnanexus(
+    clinvar_base_link, clinvar_link_path, update_project_id,
+    update_folder_name, recent_vcf_file, clinvar_checksum_file,
+    recent_tbi_file, index_checksum_file
+) -> tuple[str, str]:
+    """Download ClinVar file and index to DNAnexus project
+
+    Args:
+        clinvar_base_link (str): Base ftp link to download website
+        clinvar_link_path (str): Ftp link path to files to download
+        update_project_id (str): DNAnexus project ID for update project
+        update_folder_name (str): DNAnexus path to folder used for update
+        recent_vcf_file (str): Name of dev clinvar file
+        clinvar_checksum_file (str): Name of dev clinvar checksum
+        recent_tbi_file (str): Name of dev clinvar index
+        index_checksum_file (str): Name of dev index checksum
+
+    Returns:
+        dev_clinvar_id (str): DNAnexus file ID for clinvar file
+        dev_clinvar_id (str): DNAnexus file ID for clinvar file
+    """
+    full_website_link = f"{clinvar_base_link}/{clinvar_link_path}"
+    dev_clinvar_id = download_file_upload_DNAnexus(
+        f"{full_website_link}/{recent_vcf_file}",
+        update_project_id, update_folder_name,
+        f"{full_website_link}/{clinvar_checksum_file}"
+    )
+    dev_index_id = download_file_upload_DNAnexus(
+        f"{full_website_link}/{recent_tbi_file}",
+        update_project_id, update_folder_name,
+        f"{full_website_link}/{index_checksum_file}"
+    )
+
+    return dev_clinvar_id, dev_index_id
