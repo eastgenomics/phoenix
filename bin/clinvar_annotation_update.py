@@ -2,6 +2,7 @@
 Runs Phoenix ClinVar annotation resource update
 """
 
+from __future__ import annotations
 import argparse
 import json
 
@@ -29,7 +30,7 @@ def main(config_path) -> None:
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
     (
         recent_vcf_file, recent_tbi_file, clinvar_version_date,
-        clinvar_version, clinvar_checksum_file, index_checksum_file
+        clinvar_version, clinvar_checksum_file
     ) = get_most_recent_clivar_file_info(ftp)
 
     # check date of most recent clinvar file is within n weeks
@@ -48,7 +49,7 @@ def main(config_path) -> None:
     dev_clinvar_id, dev_index_id = download_clinvar_dnanexus(
         clinvar_base_link, clinvar_link_path, update_project_id,
         update_folder_name, recent_vcf_file, clinvar_checksum_file,
-        recent_tbi_file, index_checksum_file
+        recent_tbi_file
     )
 
     print(f"Most recent clinvar annotation resource file: {recent_vcf_file}")
@@ -74,7 +75,7 @@ def load_config(config_path) -> tuple[str, str, str, str]:
             files are stored in
 
     Raises:
-        RuntimeError: COnfig file does not contain expected keys
+        RuntimeError: Config file does not contain expected keys
         RuntimeError: Config file key values do not match expected types
     """
     with open(config_path, "r", encoding="utf8") as json_file:

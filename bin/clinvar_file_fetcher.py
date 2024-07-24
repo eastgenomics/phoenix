@@ -2,6 +2,7 @@
 Get most recent weekly release of ClinVar files
 """
 
+from __future__ import annotations
 import time
 from ftplib import FTP
 import re
@@ -113,15 +114,25 @@ def get_most_recent_clivar_file_info(ftp):
             + " on ncbi website"
         )
 
+    # get checksum for clinvar file
+    clinvar_checksum_file = recent_vcf_file + ".md5"
+    # check index file exists on website
+    if recent_tbi_file not in file_list:
+        raise RuntimeError(
+            "Matching checksum could not be found for most recent ClinVar VCF"
+            + " on ncbi website"
+        )
+
     return (
-        recent_vcf_file, recent_tbi_file, most_recent_date, clinvar_version
+        recent_vcf_file, recent_tbi_file, most_recent_date, clinvar_version,
+        clinvar_checksum_file
     )
 
 
 def download_clinvar_dnanexus(
     clinvar_base_link, clinvar_link_path, update_project_id,
     update_folder_name, recent_vcf_file, clinvar_checksum_file,
-    recent_tbi_file, index_checksum_file
+    recent_tbi_file
 ) -> tuple[str, str]:
     """Download ClinVar file and index to DNAnexus project
 
@@ -133,7 +144,6 @@ def download_clinvar_dnanexus(
         recent_vcf_file (str): Name of dev clinvar file
         clinvar_checksum_file (str): Name of dev clinvar checksum
         recent_tbi_file (str): Name of dev clinvar index
-        index_checksum_file (str): Name of dev index checksum
 
     Returns:
         dev_clinvar_id (str): DNAnexus file ID for clinvar file
@@ -145,10 +155,10 @@ def download_clinvar_dnanexus(
         update_project_id, update_folder_name,
         f"{full_website_link}/{clinvar_checksum_file}"
     )
+    # the index file does not have a checksum on the ncbi website
     dev_index_id = download_file_upload_DNAnexus(
         f"{full_website_link}/{recent_tbi_file}",
-        update_project_id, update_folder_name,
-        f"{full_website_link}/{index_checksum_file}"
+        update_project_id, update_folder_name
     )
 
     return dev_clinvar_id, dev_index_id
