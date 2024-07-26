@@ -149,15 +149,15 @@ def download_clinvar_dnanexus(
         dev_clinvar_id (str): DNAnexus file ID for clinvar file
         dev_clinvar_id (str): DNAnexus file ID for clinvar file
     """
-    full_website_link = f"{clinvar_base_link}/{clinvar_link_path}"
+    full_website_link = f"{clinvar_base_link}{clinvar_link_path}"
     dev_clinvar_id = download_file_upload_DNAnexus(
-        f"{full_website_link}/{recent_vcf_file}",
+        f"{full_website_link}{recent_vcf_file}",
         update_project_id, update_folder_name,
-        f"{full_website_link}/{clinvar_checksum_file}"
+        f"{full_website_link}{clinvar_checksum_file}"
     )
     # the index file does not have a checksum on the ncbi website
     dev_index_id = download_file_upload_DNAnexus(
-        f"{full_website_link}/{recent_tbi_file}",
+        f"{full_website_link}{recent_tbi_file}",
         update_project_id, update_folder_name
     )
 

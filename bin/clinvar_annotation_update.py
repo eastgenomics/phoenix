@@ -42,7 +42,7 @@ def main(config_path) -> None:
 
     # generate name of annotation update folder for DNAnexus update project
     update_folder_name = (
-        f"clinvar_version_{clinvar_version}_annotation_resource_update"
+        f"/clinvar_version_{clinvar_version}_annotation_resource_update"
     )
 
     # download clinvar files to DNAnexus
