@@ -16,7 +16,8 @@ Config file structure:
 {
     "CLINVAR_BASE_LINK": "https://ftp.ncbi.nlm.nih.gov",
     "CLINVAR_LINK_PATH_B38": "/pub/clinvar/vcf_GRCh38/weekly/",
-    "CLINVAR_CHECK_NUM_WEEKS_AGO": 8
+    "CLINVAR_CHECK_NUM_WEEKS_AGO": 8,
+    "UPDATE_PROJECT_ID": "project-xxxx"
 }
 
 To build Phoenix as a nextflow applet run the following from the phoenix repo directory:
