@@ -52,7 +52,9 @@ def connect_to_website(base_link, path) -> FTP:
     return ftp
 
 
-def get_most_recent_clivar_file_info(ftp):
+def get_most_recent_clivar_file_info(ftp) -> tuple[
+    str, str, datetime.date, str
+]:
     """Gets information on most recent clinvar files
 
     Args:
@@ -147,18 +149,22 @@ def download_clinvar_dnanexus(
 
     Returns:
         dev_clinvar_id (str): DNAnexus file ID for clinvar file
-        dev_clinvar_id (str): DNAnexus file ID for clinvar file
+        dev_index_id (str): DNAnexus file ID for clinvar file index
     """
     full_website_link = f"{clinvar_base_link}{clinvar_link_path}"
+    vcf_basename = recent_vcf_file.split(".")[0]
+    new_vcf_name = f"{vcf_basename}_b38_withchr.vcf.gz"
     dev_clinvar_id = download_file_upload_DNAnexus(
         f"{full_website_link}{recent_vcf_file}",
-        update_project_id, update_folder_name,
+        update_project_id, update_folder_name, new_vcf_name,
         f"{full_website_link}{clinvar_checksum_file}"
     )
     # the index file does not have a checksum on the ncbi website
+    tbi_basename = recent_tbi_file.split(".")[0]
+    new_tbi_name = f"{tbi_basename}_b38_withchr.vcf.gz.tbi"
     dev_index_id = download_file_upload_DNAnexus(
         f"{full_website_link}{recent_tbi_file}",
-        update_project_id, update_folder_name
+        update_project_id, update_folder_name, new_tbi_name
     )
 
     return dev_clinvar_id, dev_index_id

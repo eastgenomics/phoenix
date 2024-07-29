@@ -78,31 +78,36 @@ def get_file_md5(file_path) -> str:
         return md5(f.read()).hexdigest()
 
 
-def download_ftp_file(download_link_file) -> str:
+def download_ftp_file(download_link_file, file_name=None) -> str:
     """Download file from ftp link
 
     Args:
         download_link_file (str): ftp download url to file
+        file_name (str, optional): name to upload file as
 
     Returns:
         str: path to downloaded file
     """
-    file = os.path.basename(download_link_file)
+    website_filename = os.path.basename(download_link_file)
+    if file_name is None:
+        file = website_filename
+    else:
+        file = file_name
     parsed_url_file = urlparse(download_link_file)
     domain = parsed_url_file.netloc
-    path = parsed_url_file.path[:-len(file)]
+    path = parsed_url_file.path[:-len(website_filename)]
     ftp = FTP(domain)
     ftp.login()
     ftp.cwd(path)
     with open(file, 'wb') as localfile:
-        ftp.retrbinary('RETR ' + file, localfile.write, 1024)
+        ftp.retrbinary('RETR ' + website_filename, localfile.write, 1024)
     ftp.quit()
 
     return file
 
 
 def download_file_upload_DNAnexus(
-        download_link_file, project_id, proj_folder_path,
+        download_link_file, project_id, proj_folder_path, file_name,
         download_link_checksum=None
 ) -> str:
     """Download file, compare to checksum (optional), upload to DNAnexus
@@ -111,6 +116,7 @@ def download_file_upload_DNAnexus(
         download_link_file (str): link to download file
         project_id (str): DNAnexus project ID to upload file to
         proj_folder_path (str): DNAnexus project folder path to upload to
+        file_name (str): name to save file as on DNAnexus
         download_link_checksum (str, optional): link to download checksum for
             file. Defaults to None
 
@@ -121,7 +127,7 @@ def download_file_upload_DNAnexus(
         str: DNAnexus file ID for file uploaded
     """
     # download file
-    file = download_ftp_file(download_link_file)
+    file = download_ftp_file(download_link_file, file_name)
 
     # if checksum link is provided, compare to file downloaded
     if download_link_checksum is not None:
