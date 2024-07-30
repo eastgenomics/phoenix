@@ -8,6 +8,7 @@ import dxpy
 import os
 from ftplib import FTP
 from urllib.parse import urlparse
+from dxpy.bindings.dxproject import DXProject
 
 
 def is_date_within_n_weeks(comparison_date, num_weeks_ago=8) -> bool:
@@ -44,9 +45,7 @@ def compare_checksums_md5(file_path, checksum_path) -> bool:
     # read checksum file from path
     try:
         with open(checksum_path, "r") as file:
-            for line in file:
-                md5_checksum = line[0:32]
-                break
+            md5_checksum = file.read()[0:32]
     except FileNotFoundError:
         raise RuntimeError(
             "During checksum comparison,"
@@ -137,11 +136,73 @@ def download_file_upload_DNAnexus(
             raise RuntimeError(
                 f"File {file} did not match checksum {checksum}"
             )
+    file_id = upload_file_DNAnexus(file_name, project_id, proj_folder_path)
+    return file_id
 
-    # create new folder, upload files to folder
-    project = dxpy.bindings.dxproject.DXProject(dxid=project_id)
-    project.new_folder(proj_folder_path, parents=True)
+
+def upload_file_DNAnexus(
+    file_path, project_id, proj_folder_path=None
+) -> str:
+    """Uploads local file to DNAnexus and creates folder if needed
+
+    Args:
+        file_path (str): path to local file to upload
+        project_id (str): DNAnexus project id of project to upload to
+        proj_folder_path (str, optional): DNAnexus folder path to upload to
+
+    Returns:
+        str: DNAnexus file ID of uploaded file
+    """
+    if proj_folder_path is not None:
+        if not check_proj_folder_exists(project_id, proj_folder_path):
+            # create folder
+            project = dxpy.bindings.dxproject.DXProject(dxid=project_id)
+            project.new_folder(proj_folder_path, parents=True)
+
     file_id = dxpy.upload_local_file(
-        filename=file, project=project_id, folder=proj_folder_path
+        filename=file_path, project=project_id, folder=proj_folder_path
     ).get_id()
     return file_id
+
+
+def check_proj_folder_exists(project_id, folder_path) -> bool:
+    """Checks if a DNAnexus folder exists in a given project
+
+    Args:
+        project_id (str): DNAnexus project ID
+        folder_path (str): path to DNAnexus folder
+
+    Raises:
+        RuntimeError: project not found
+
+    Returns:
+        bool: does folder exist in project
+    """
+    if not check_project_exists(project_id):
+        raise RuntimeError(f"Project {project_id} does not exist")
+
+    try:
+        dxpy.api.project_list_folder(
+            project_id,
+            input_params={"folder": folder_path, "only": "folders"},
+            always_retry=True
+        )
+        return True
+    except dxpy.exceptions.ResourceNotFound:
+        return False
+
+
+def check_project_exists(project_id) -> bool:
+    """Checks if a DNAnexus project exists from project ID
+
+    Args:
+        project_id (str): DNAnexus project ID
+
+    Returns:
+        bool: does the specified project exist
+    """
+    try:
+        DXProject(project_id)
+        return True
+    except dxpy.exceptions.DXError:
+        return False
