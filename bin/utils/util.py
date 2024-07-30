@@ -156,7 +156,7 @@ def upload_file_DNAnexus(
     if proj_folder_path is not None:
         if not check_proj_folder_exists(project_id, proj_folder_path):
             # create folder
-            project = dxpy.bindings.dxproject.DXProject(dxid=project_id)
+            project = DXProject(dxid=project_id)
             project.new_folder(proj_folder_path, parents=True)
 
     file_id = dxpy.upload_local_file(

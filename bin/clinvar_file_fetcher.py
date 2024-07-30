@@ -119,7 +119,7 @@ def get_most_recent_clivar_file_info(ftp) -> tuple[
     # get checksum for clinvar file
     clinvar_checksum_file = recent_vcf_file + ".md5"
     # check index file exists on website
-    if recent_tbi_file not in file_list:
+    if clinvar_checksum_file not in file_list:
         raise RuntimeError(
             "Matching checksum could not be found for most recent ClinVar VCF"
             + " on ncbi website"
@@ -153,7 +153,7 @@ def download_clinvar_dnanexus(
     """
     full_website_link = f"{clinvar_base_link}{clinvar_link_path}"
     vcf_basename = recent_vcf_file.split(".")[0]
-    new_vcf_name = f"{vcf_basename}_b38_withchr.vcf.gz"
+    new_vcf_name = f"{vcf_basename}_GRCh38.vcf.gz"
     dev_clinvar_id = download_file_upload_DNAnexus(
         f"{full_website_link}{recent_vcf_file}",
         update_project_id, update_folder_name, new_vcf_name,
@@ -161,7 +161,7 @@ def download_clinvar_dnanexus(
     )
     # the index file does not have a checksum on the ncbi website
     tbi_basename = recent_tbi_file.split(".")[0]
-    new_tbi_name = f"{tbi_basename}_b38_withchr.vcf.gz.tbi"
+    new_tbi_name = f"{tbi_basename}_GRCh38.vcf.gz.tbi"
     dev_index_id = download_file_upload_DNAnexus(
         f"{full_website_link}{recent_tbi_file}",
         update_project_id, update_folder_name, new_tbi_name
