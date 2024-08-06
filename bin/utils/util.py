@@ -37,7 +37,6 @@ def compare_checksums_md5(file_path, checksum_path) -> bool:
 
     Raises:
         RuntimeError: File to be compared could not be found
-        RuntimeError: Md5 file to be compared to could not be found
 
     Returns:
         bool: Does file match checksum provided
@@ -46,7 +45,7 @@ def compare_checksums_md5(file_path, checksum_path) -> bool:
     try:
         with open(checksum_path, "r") as file:
             md5_checksum = file.read()[0:32]
-    except FileNotFoundError:
+    except OSError:
         raise RuntimeError(
             "During checksum comparison,"
             + f" file {checksum_path} could not be found"
@@ -153,6 +152,8 @@ def upload_file_DNAnexus(
     Returns:
         str: DNAnexus file ID of uploaded file
     """
+    # if folder path is None, assume it is created in project root
+    # else, create folder if it does not already exist
     if proj_folder_path is not None:
         if not check_proj_folder_exists(project_id, proj_folder_path):
             # create folder
