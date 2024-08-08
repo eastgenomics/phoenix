@@ -24,14 +24,13 @@ class TestUtils(unittest.TestCase):
         assert not is_date_within_n_weeks(date, num_weeks_ago=4)
 
     @patch("bin.utils.util.get_file_md5")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_compare_checksums_md5_pass(self, mocked_open, mock_md5):
+    def test_compare_checksums_md5_pass(self, mock_md5):
         """Test md5 checksum check passes when checksums match
         """
         md5 = "12345678901234567890123456789012"
-        mocked_open.read_data = md5
         mock_md5.return_value = md5
-        assert compare_checksums_md5("", "")
+        with patch("builtins.open", mock_open(read_data=md5)):
+            assert compare_checksums_md5("", "")
 
     @patch("bin.utils.util.get_file_md5")
     @patch("builtins.open", new_callable=mock_open)
@@ -57,14 +56,13 @@ class TestUtils(unittest.TestCase):
         assert not compare_checksums_md5("", "")
 
     @patch("bin.utils.util.md5")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_get_file_md5(self, mocked_open, mock_md5):
+    def test_get_file_md5(self, mock_md5):
         """Test md5 checksum can be obtained from file path
         """
         md5 = "12345678901234567890123456789012"
-        mocked_open.read_data = md5
-        mock_md5.return_value.hexdigest = md5
-        assert get_file_md5("") == md5
+        mock_md5.return_value.hexdigest.return_value = md5
+        with patch("builtins.open", mock_open(read_data=md5)):
+            assert get_file_md5("") == md5
 
     @patch("ftplib.FTP.retrbinary")
     @patch("ftplib.FTP.cwd")

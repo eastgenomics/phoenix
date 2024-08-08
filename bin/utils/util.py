@@ -73,7 +73,8 @@ def get_file_md5(file_path) -> str:
         str: hex digested md5 checksum of file
     """
     with open(file_path, "rb") as f:
-        return md5(f.read()).hexdigest()
+        md5_obj = md5(f.read())
+        return md5_obj.hexdigest()
 
 
 def download_ftp_file(download_link_file, file_name=None) -> str:
