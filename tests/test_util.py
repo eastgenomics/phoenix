@@ -29,7 +29,7 @@ class TestUtils(unittest.TestCase):
         """Test md5 checksum check passes when checksums match
         """
         md5 = "12345678901234567890123456789012"
-        mocked_open.return_value = md5
+        mocked_open.read_data = md5
         mock_md5.return_value = md5
         assert compare_checksums_md5("", "")
 
@@ -53,19 +53,17 @@ class TestUtils(unittest.TestCase):
     def test_compare_checksums_md5_fail(self, mocked_open, mock_md5):
         """Test md5 checksum check fails when checksums do not match
         """
-        md5 = "12345678901234567890123456789012"
-        mocked_open.return_value = md5
         mock_md5.return_value = "1234567890123456789012345678fail"
         assert not compare_checksums_md5("", "")
 
-    @patch("hashlib.md5.hexdigest")
+    @patch("bin.utils.util.md5")
     @patch("builtins.open", new_callable=mock_open)
-    def test_get_file_md5(self, mocked_open, mocked_digest):
+    def test_get_file_md5(self, mocked_open, mock_md5):
         """Test md5 checksum can be obtained from file path
         """
         md5 = "12345678901234567890123456789012"
-        mocked_open.return_value = ""
-        mocked_digest.return_value = md5
+        mocked_open.read_data = md5
+        mock_md5.return_value.hexdigest = md5
         assert get_file_md5("") == md5
 
     @patch("ftplib.FTP.retrbinary")
@@ -77,7 +75,6 @@ class TestUtils(unittest.TestCase):
     ):
         """Test ftp file path can be obtained from downloaded file
         """
-        mocked_open.return_value = ""
         download_link_file = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/weekly/file.vcf.gz"
         assert download_ftp_file(download_link_file) == "file.vcf.gz"
 
@@ -90,7 +87,6 @@ class TestUtils(unittest.TestCase):
     ):
         """Test ftp file path can be obtained from downloaded file
         """
-        mocked_open.return_value = ""
         download_link_file = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/weekly/file.vcf.gz"
         assert download_ftp_file(
             download_link_file, "my_file.vcf.gz"
@@ -127,9 +123,6 @@ class TestUtils(unittest.TestCase):
         mock_md5.return_value = False
         return_file = "file-1234"
         mock_upload.return_value = return_file
-        assert download_file_upload_DNAnexus(
-            "", "", "", "", ""
-        ) == return_file
         expected_err = (
                 f"File {ftp_name} did not match checksum {ftp_name}"
             )
@@ -139,8 +132,8 @@ class TestUtils(unittest.TestCase):
             )
 
     @patch("bin.utils.util.dxpy.upload_local_file")
-    @patch("bin.utils.util.dxpy.bindings.dxproject.DXProject.new_folder")
-    @patch("bin.utils.util.dxpy.bindings.dxproject.DXProject")
+    @patch("bin.utils.util.DXProject.new_folder")
+    @patch("bin.utils.util.DXProject")
     @patch("bin.utils.util.check_proj_folder_exists")
     def test_upload_file_DNAnexus(
         self, mock_folder, mock_project, mock_new_folder, mock_upload
@@ -149,12 +142,12 @@ class TestUtils(unittest.TestCase):
         """
         file_id = "file-1234"
         mock_folder.return_value = True
-        mock_upload.return_value = file_id
+        mock_upload.return_value.get_id.return_value = file_id
         assert upload_file_DNAnexus("", "") == file_id
 
     @patch("bin.utils.util.dxpy.upload_local_file")
-    @patch("bin.utils.util.dxpy.bindings.dxproject.DXProject.new_folder")
-    @patch("bin.utils.util.dxpy.bindings.dxproject.DXProject")
+    @patch("bin.utils.util.DXProject.new_folder")
+    @patch("bin.utils.util.DXProject")
     @patch("bin.utils.util.check_proj_folder_exists")
     def test_upload_file_DNAnexus_path_exists(
         self, mock_folder, mock_project, mock_new_folder, mock_upload
@@ -164,12 +157,12 @@ class TestUtils(unittest.TestCase):
         """
         file_id = "file-1234"
         mock_folder.return_value = True
-        mock_upload.return_value = file_id
+        mock_upload.return_value.get_id.return_value = file_id
         assert upload_file_DNAnexus("", "", "/my_path") == file_id
 
     @patch("bin.utils.util.dxpy.upload_local_file")
-    @patch("bin.utils.util.dxpy.bindings.dxproject.DXProject.new_folder")
-    @patch("bin.utils.util.dxpy.bindings.dxproject.DXProject")
+    @patch("bin.utils.util.DXProject.new_folder")
+    @patch("bin.utils.util.DXProject")
     @patch("bin.utils.util.check_proj_folder_exists")
     def test_upload_file_DNAnexus_path(
         self, mock_folder, mock_project, mock_new_folder, mock_upload
@@ -179,7 +172,8 @@ class TestUtils(unittest.TestCase):
         """
         file_id = "file-1234"
         mock_folder.return_value = False
-        mock_upload.return_value = file_id
+        mock_project.return_value.new_folder.return_value = None
+        mock_upload.return_value.get_id.return_value = file_id
         assert upload_file_DNAnexus("", "", "/my_path") == file_id
 
     @patch("bin.utils.util.DXProject")
