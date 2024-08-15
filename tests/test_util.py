@@ -217,6 +217,18 @@ class TestUtils(unittest.TestCase):
         test_folder = ""
         assert not check_proj_folder_exists(test_proj_id, test_folder)
 
+    @patch("bin.utils.util.check_project_exists")
+    @patch("bin.utils.util.dxpy.api.project_list_folder")
+    def test_check_proj_folder_exists_no_proj(self, mock_folder, mock_project):
+        """Test check_proj_folder_exists raises error if project does not exist
+        """
+        mock_project.return_value = False
+        test_proj_id = "proj-1234"
+        test_folder = ""
+        expected_err = f"Project {test_proj_id} does not exist"
+        with self.assertRaisesRegex(RuntimeError, expected_err):
+            check_proj_folder_exists(test_proj_id, test_folder)
+
 
 if __name__ == "__main__":
     unittest.main()
