@@ -14,7 +14,7 @@ def get_prod_vep_config(ref_proj_id, ref_proj_folder, assay) -> str:
     Args:
         ref_proj_id (str): DNAnexus project ID for 001 reference project
         ref_proj_folder (str): folder path containing vep config files
-        assay (str): name of assay of vep config (TWE, TSO500, MYE)
+        assay (str): name of assay of vep config (TWE, TSO500, CEN, MYE)
 
     Raises:
         RuntimeError: no vep config files could be found in ref project folder
