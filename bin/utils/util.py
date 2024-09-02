@@ -9,6 +9,8 @@ import os
 from ftplib import FTP
 from urllib.parse import urlparse
 from dxpy.bindings.dxproject import DXProject
+from packaging import version
+import re
 
 
 def is_date_within_n_weeks(comparison_date, num_weeks_ago=8) -> bool:
@@ -208,3 +210,43 @@ def check_project_exists(project_id) -> bool:
         return True
     except dxpy.exceptions.DXError:
         return False
+
+
+def get_most_recent_file_from_version(files) -> str:
+    """get latest file in list by version
+
+    Args:
+        file_names (list[list[str]]): results of dxpy.find_data_objects
+        to compare
+
+    Raises:
+        RuntimeError: all config files have invalid versions
+
+    Returns:
+        str: DNAnexus file ID of latest file
+    """
+    # regex format: v, version number, file extension
+    regex = r"v([\.0-9]+?)\.json"
+    latest_version = version.parse("0.0.1")
+    latest_file = None
+    for file in files:
+        name = file["describe"]["name"]
+        version_str = re.search(regex, name)
+
+        if not version_str:
+            # if cannot find match for regex continue
+            continue
+        try:
+            found_version = version_str[1]
+            version_parsed = version.parse(found_version)
+        except version.InvalidVersion:
+            # if version is in invalid format continue
+            continue
+        if version_parsed > latest_version:
+            latest_version = version_parsed
+            latest_file = file["id"]
+
+    if latest_file is None:
+        raise RuntimeError("All config files have invalid version numbers")
+    else:
+        return latest_file

@@ -11,6 +11,7 @@ from clinvar_file_fetcher import (
     connect_to_website, get_most_recent_clivar_file_info,
     download_clinvar_dnanexus
 )
+import vep_handler
 
 
 def main(config_path) -> None:
@@ -25,7 +26,7 @@ def main(config_path) -> None:
     # load config file
     (
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
-        update_project_id
+        update_project_id, reference_project_id
     ) = load_config(config_path)
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
     (
@@ -59,8 +60,19 @@ def main(config_path) -> None:
     print(f"DNAnexus file ID of development clinvar file: {dev_clinvar_id}")
     print(f"DNAnexus file ID of development index file: {dev_index_id}")
 
+    # get inputs for running vep
+    config_folder = "/dynamic_files/vep_configs"
+    # assay is temporarily set to CEN for testing as MYE vep config files have
+    # not yet been deployed to prodution
+    assay = "CEN"
+    prod_vep_config_id = vep_handler.get_prod_vep_config(
+        reference_project_id, config_folder, assay
+    )
 
-def load_config(config_path) -> tuple[str, str, str, str]:
+    print(f"Most recent vep config file for CEN is {prod_vep_config_id}")
+
+
+def load_config(config_path) -> tuple[str, str, str, str, str]:
     """Opens config file in json format and reads contents
 
     Args:
@@ -84,7 +96,8 @@ def load_config(config_path) -> tuple[str, str, str, str]:
         "CLINVAR_BASE_LINK",
         "CLINVAR_LINK_PATH_B38",
         "CLINVAR_CHECK_NUM_WEEKS_AGO",
-        "UPDATE_PROJECT_ID"
+        "UPDATE_PROJECT_ID",
+        "REFERENCE_PROJECT_ID"
     ]
     if not all(e in config for e in keys):
         raise RuntimeError("Config file does not contain expected keys")
@@ -93,13 +106,14 @@ def load_config(config_path) -> tuple[str, str, str, str]:
         clinvar_link_path = config.get("CLINVAR_LINK_PATH_B38")
         clinvar_weeks_ago = int(config.get("CLINVAR_CHECK_NUM_WEEKS_AGO"))
         update_project_id = config.get("UPDATE_PROJECT_ID")
+        reference_project_id = config.get("REFERENCE_PROJECT_ID")
     except (TypeError, ValueError):
         raise RuntimeError(
             "Config file key values do not match expected value types"
         )
     return (
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
-        update_project_id
+        update_project_id, reference_project_id
     )
 
 
