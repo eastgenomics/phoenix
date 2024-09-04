@@ -28,7 +28,7 @@ from clinvar_file_fetcher import (
 import vep_handler
 
 
-def main(config_path) -> None:
+def main(config_path, credentials_path) -> None:
     """Run annotation update for b38 clinvar annotation resource file
 
     Args:
@@ -43,6 +43,8 @@ def main(config_path) -> None:
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
         update_project_id, reference_project_id
     ) = load_config(config_path)
+    # load credentials
+    dnanexus_token = load_credentials(credentials_path)
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
     (
         recent_vcf_file, recent_tbi_file, clinvar_version_date,
@@ -132,11 +134,41 @@ def load_config(config_path) -> tuple[str, str, str, str, str]:
     )
 
 
+def load_credentials(credentials_path) -> str:
+    """Opens credentials file in json format and reads contents
+
+    Args:
+        credentials_path (str): Path to credentials file
+
+    Raises:
+        RuntimeError: Credentials file does not contain expected keys
+        RuntimeError: Credentials file key values do not match expected types
+
+    Returns:
+        str: DNAnexus auth token
+    """
+    with open(credentials_path, "r", encoding="utf8") as json_file:
+        credentials = json.load(json_file)
+    keys = [
+        "DNANEXUS_TOKEN"
+    ]
+    if not all(e in credentials for e in keys):
+        raise RuntimeError("Credentials file does not contain expected keys")
+    try:
+        dnanexus_token = credentials.get("DNANEXUS_TOKEN")
+    except (TypeError, ValueError):
+        raise RuntimeError(
+            "Credentials file key values do not match expected value types"
+        )
+    return dnanexus_token
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # Add arguments
     parser.add_argument('--config_file', type=str, required=True)
+    parser.add_argument('--credentials_file', type=str, required=True)
     # Parse arguments
     args = parser.parse_args()
 
-    main(args.config_file)
+    main(args.config_file, args.credentials_file)
