@@ -5,6 +5,20 @@ Runs Phoenix ClinVar annotation resource update
 from __future__ import annotations
 import argparse
 import json
+import subprocess
+from glob import glob
+import os
+
+if os.path.exists('/home/dnanexus'):
+    # use pip to intall python dependencies on DNAnexus worker node
+    process_output = subprocess.check_output([
+        'pip', 'install', "--no-index", "--no-deps"
+    ] + glob("nextflow-bin/packages/*"))
+else:
+    raise RuntimeError(
+        "Folder containing python packages to be installed"
+        + " \"nextflow-bin/packages\" cannot be found"
+    )
 
 from utils.util import is_date_within_n_weeks
 from clinvar_file_fetcher import (
@@ -23,6 +37,7 @@ def main(config_path) -> None:
     Raises:
         RuntimeError: Most recent clinvar file is over 8 weeks old
     """
+
     # load config file
     (
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
