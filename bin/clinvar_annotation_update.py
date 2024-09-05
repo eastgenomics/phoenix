@@ -20,7 +20,9 @@ else:
         + " \"nextflow-bin/packages\" cannot be found"
     )
 
-from utils.util import is_date_within_n_weeks
+from utils.util import (
+    is_date_within_n_weeks, login_DNAnexus
+)
 from clinvar_file_fetcher import (
     connect_to_website, get_most_recent_clivar_file_info,
     download_clinvar_dnanexus
@@ -43,8 +45,12 @@ def main(config_path, credentials_path) -> None:
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
         update_project_id, reference_project_id
     ) = load_config(config_path)
+
     # load credentials
     dnanexus_token = load_credentials(credentials_path)
+    # log in to DNAnexus using auth token
+    login_DNAnexus(dnanexus_token)
+
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
     (
         recent_vcf_file, recent_tbi_file, clinvar_version_date,
