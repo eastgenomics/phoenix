@@ -21,11 +21,19 @@ Config file structure:
     "REFERENCE_PROJECT_ID": "project-xxxx"
 }
 
+In addition, a valid DNAnexus file path must be provided to a credentials file in json format as described below.
+This should be located in a private repository that only the owner of the authentication tokens within has permission to access.
+
+Credentials file structure:
+{
+    "SLACK_TOKEN": "SLACK_TOKEN_ID"
+}
+
 To build Phoenix as a nextflow applet run the following from the phoenix repo directory:
-dx build --nextflow .
+dx build --nextflow . --extra-args '{"access":{"allProjects":"VIEW"}}'
 
 To set off the nextflow DNAnexus applet, run the following command, replacing the project ID you are using to run Phoenix in and the DNAnexus file path with the location of the config file you wish to use on DNAnexus.
-dx run phoenix -i nextflow_pipeline_params="--config_path="dx://project-xxxx:/path/to/phoenix_config.json"" \
+dx run phoenix -i nextflow_pipeline_params="--config_path="dx://project-xxxx:/path/to/phoenix_config.json" --credentials_path="dx://project-xxxx:/path/to/phoenix_credentials.json"" \
 --destination="path/to/destination"
 
 During early development, Phoenix can be run as an applet. However, it can easily be converted to a DNANexus app from an applet with the following command:
@@ -39,7 +47,7 @@ dx build --app --from applet-xxxx
 
 **Inputs**
 Required
-* `nextflow_pipeline_params`: --config_path="dx://project-xxxx:/path_to_config/phoenix_config.json"
+* `nextflow_pipeline_params`: --config_path="dx://project-xxxx:/path_to_config/phoenix_config.json" --credentials_path="dx://project-xxxx:/path/to/phoenix_credentials.json"
 
 Optional
 * None
