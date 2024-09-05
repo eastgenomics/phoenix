@@ -21,7 +21,7 @@ else:
     )
 
 from utils.util import (
-    is_date_within_n_weeks, login_DNAnexus
+    is_date_within_n_weeks
 )
 from clinvar_file_fetcher import (
     connect_to_website, get_most_recent_clivar_file_info,
@@ -45,11 +45,6 @@ def main(config_path, credentials_path) -> None:
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
         update_project_id, reference_project_id
     ) = load_config(config_path)
-
-    # load credentials
-    dnanexus_token = load_credentials(credentials_path)
-    # log in to DNAnexus using auth token
-    login_DNAnexus(dnanexus_token)
 
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
     (
@@ -156,17 +151,17 @@ def load_credentials(credentials_path) -> str:
     with open(credentials_path, "r", encoding="utf8") as json_file:
         credentials = json.load(json_file)
     keys = [
-        "DNANEXUS_TOKEN"
+        "SLACK_TOKEN"
     ]
     if not all(e in credentials for e in keys):
         raise RuntimeError("Credentials file does not contain expected keys")
     try:
-        dnanexus_token = credentials.get("DNANEXUS_TOKEN")
+        slack_token = credentials.get("SLACK_TOKEN")
     except (TypeError, ValueError):
         raise RuntimeError(
             "Credentials file key values do not match expected value types"
         )
-    return dnanexus_token
+    return slack_token
 
 
 if __name__ == "__main__":
