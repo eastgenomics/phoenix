@@ -53,7 +53,4 @@ def get_prod_vep_config(ref_proj_id, ref_proj_folder, assay) -> str:
         )
 
     # return the most recent file uploaded found
-    if len(config_files) == 1:
-        return config_files[0]["id"]
-    else:
-        return get_most_recent_file_from_version(config_files)
+    return get_most_recent_file_from_version(config_files)
