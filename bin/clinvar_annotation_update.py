@@ -103,6 +103,9 @@ def load_config(config_path) -> tuple[str, str, str, str, str, str]:
             weeks old
         update_project_id (str): DNAnexus project ID for the project update
             files are stored in
+        reference_project_id (str): DNAnexus project ID for reference project
+        vep_config_folder (str): DNAnexus project folder in reference project
+            containing vep config files
 
     Raises:
         RuntimeError: Config file does not contain expected keys
