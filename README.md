@@ -18,7 +18,8 @@ Config file structure:
     "CLINVAR_LINK_PATH_B38": "/pub/clinvar/vcf_GRCh38/weekly/",
     "CLINVAR_CHECK_NUM_WEEKS_AGO": 8,
     "UPDATE_PROJECT_ID": "project-xxxx",
-    "REFERENCE_PROJECT_ID": "project-xxxx"
+    "REFERENCE_PROJECT_ID": "project-xxxx",
+    "VEP_CONFIG_FOLDER": "/dynamic_files/vep_configs"
 }
 
 In addition, a valid DNAnexus file path must be provided to a credentials file in json format as described below.

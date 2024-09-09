@@ -44,7 +44,7 @@ def main(config_path, credentials_path) -> None:
     # load config file
     (
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
-        update_project_id, reference_project_id, vep_project_id
+        update_project_id, reference_project_id, vep_config_folder
     ) = load_config(config_path)
 
     ftp = connect_to_website(clinvar_base_link, clinvar_link_path)
@@ -84,13 +84,13 @@ def main(config_path, credentials_path) -> None:
     # not yet been deployed to prodution
     assay = "CEN"
     prod_vep_config_id = vep_handler.get_prod_vep_config(
-        reference_project_id, vep_project_id, assay
+        reference_project_id, vep_config_folder, assay
     )
 
     print(f"Most recent vep config file for CEN is {prod_vep_config_id}")
 
 
-def load_config(config_path) -> tuple[str, str, str, str, str]:
+def load_config(config_path) -> tuple[str, str, str, str, str, str]:
     """Opens config file in json format and reads contents
 
     Args:
@@ -126,14 +126,14 @@ def load_config(config_path) -> tuple[str, str, str, str, str]:
         clinvar_weeks_ago = int(config.get("CLINVAR_CHECK_NUM_WEEKS_AGO"))
         update_project_id = config.get("UPDATE_PROJECT_ID")
         reference_project_id = config.get("REFERENCE_PROJECT_ID")
-        vep_project_id = config.get("VEP_CONFIG_FOLDER")
+        vep_config_folder = config.get("VEP_CONFIG_FOLDER")
     except (TypeError, ValueError):
         raise RuntimeError(
             "Config file key values do not match expected value types"
         )
     return (
         clinvar_base_link, clinvar_link_path, clinvar_weeks_ago,
-        update_project_id, reference_project_id, vep_project_id
+        update_project_id, reference_project_id, vep_config_folder
     )
 
 
