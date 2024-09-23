@@ -130,7 +130,7 @@ def load_config(config_path) -> tuple[str, str, str, str, str, str]:
         update_project_id = config.get("UPDATE_PROJECT_ID")
         reference_project_id = config.get("REFERENCE_PROJECT_ID")
         vep_config_folder = config.get("VEP_CONFIG_FOLDER")
-    except (TypeError, ValueError):
+    except (TypeError):
         raise RuntimeError(
             "Config file key values do not match expected value types"
         )
@@ -148,7 +148,6 @@ def load_credentials(credentials_path) -> str:
 
     Raises:
         RuntimeError: Credentials file does not contain expected keys
-        RuntimeError: Credentials file key values do not match expected types
 
     Returns:
         str: DNAnexus auth token
@@ -160,12 +159,7 @@ def load_credentials(credentials_path) -> str:
     ]
     if not all(e in credentials for e in keys):
         raise RuntimeError("Credentials file does not contain expected keys")
-    try:
-        slack_token = credentials.get("SLACK_TOKEN")
-    except (TypeError, ValueError):
-        raise RuntimeError(
-            "Credentials file key values do not match expected value types"
-        )
+    slack_token = credentials.get("SLACK_TOKEN")
     return slack_token
 
 

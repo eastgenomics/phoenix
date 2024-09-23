@@ -250,22 +250,3 @@ def get_most_recent_file_from_version(files) -> str:
         raise RuntimeError("All config files have invalid version numbers")
     else:
         return latest_file
-
-
-def login_DNAnexus(auth_token) -> None:
-    """logs into DNAnexus
-
-    Raises:
-        RuntimeError: DNAnexus user authentification check failed
-    """
-    DX_SECURITY_CONTEXT = {
-        "auth_token_type": "Bearer",
-        "auth_token": auth_token
-    }
-
-    dxpy.set_security_context(DX_SECURITY_CONTEXT)
-
-    try:
-        dxpy.api.system_whoami()
-    except Exception:
-        raise RuntimeError("DNAnexus user authentification failed")
