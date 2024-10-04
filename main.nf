@@ -6,6 +6,8 @@ pathToProjectDir = ""
 
 process clinvarAnnotationUpdate
 {
+    container 'dx://project-GkxxZq843Zq2f0Gk3Z40p7BJ:file-Gqzy3fj43Zq3Bz575J27Zj8Z'
+
     input:
         path config_path
         path credentials_path
